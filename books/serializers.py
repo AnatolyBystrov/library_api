@@ -11,7 +11,7 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = '__all__'
         extra_kwargs = {
-            'isbn': {'max_length': 13}  # Максимум 13 символов!
+            'isbn': {'max_length': 13}  
         }
 
 class AuthorSerializer(serializers.ModelSerializer):
