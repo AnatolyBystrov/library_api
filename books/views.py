@@ -1,8 +1,8 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count, Avg, Q
-from rest_framework.decorators import action, api_view, permission_classes
+from django.db.models import Count, Q
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.core.cache import cache
 from rest_framework.views import APIView
@@ -29,8 +29,8 @@ class BookViewSet(viewsets.ModelViewSet):
             return Response(cached_data)
 
         top_books = (
-            Book.objects.annotate(avg_rating=Avg('favorited_by__user'))
-            .order_by('-avg_rating')[:10]
+            Book.objects.annotate(fav_count=Count('favorited_by'))
+            .order_by('-fav_count')[:10]
         )
 
         serialized_data = BookSerializer(top_books, many=True).data
@@ -41,13 +41,12 @@ class BookViewSet(viewsets.ModelViewSet):
     def books_by_genre(self, request):
         genre = request.query_params.get('genre', None)
         if genre:
-            books = Book.objects.filter(genre__icontains=genre)
+            books = Book.objects.filter(genre__iexact=genre)
             return Response(BookSerializer(books, many=True).data)
         return Response({"error": "Genre parameter is required"}, status=400)
 
     @action(detail=False, methods=['get'])
     def search(self, request):
-        """🔍 Поиск книг по названию или имени автора"""
         query = request.GET.get("query", "").strip()
         if not query:
             return Response({"error": "Query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -104,7 +103,7 @@ class SuggestedBooksViewSet(viewsets.ReadOnlyModelViewSet):
 
         favorite_books = FavoriteBook.objects.filter(user=user).values_list('book', flat=True)
         if not favorite_books:
-            return Book.objects.none()
+            return Book.objects.annotate(fav_count=Count('favorited_by')).order_by('-fav_count')[:5]
 
         favorite_authors = (
             Book.objects.filter(id__in=favorite_books)
