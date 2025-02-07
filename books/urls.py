@@ -9,7 +9,7 @@ from .views import (
 router = DefaultRouter()
 router.register(r'books', BookViewSet, basename='book')
 router.register(r'authors', AuthorViewSet, basename='author')
-router.register(r'favoritebooks', FavoriteBookViewSet, basename='favoritebooks')
+router.register(r'favorites', FavoriteBookViewSet, basename='favorite-books')
 router.register(r'suggested-books', SuggestedBooksViewSet, basename="suggested-books")
 
 urlpatterns = [

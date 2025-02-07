@@ -121,3 +121,12 @@ To deploy the project:
 ## Contact
 For any issues, feel free to open a GitHub issue or reach out via email.
 
+{
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcwNDY3MzQ3LCJpYXQiOjE3Mzg5MzEzNDcsImp0aSI6IjA1OGFkN2JkZjQ5MjQ1MzliYjhmNDM3MWNmNTljMmM4IiwidXNlcl9pZCI6Mn0.tm_YO2ciha7yhp8O7H4jyWAnwGyMoHQ1MJzNsMn05XU"
+}
+
+SELECT book_id, AVG(rating) AS avg_rating
+FROM user_favorites
+GROUP BY book_id
+ORDER BY avg_rating DESC
+LIMIT 5;
